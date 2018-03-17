@@ -2,7 +2,6 @@ defmodule CheckersWeb.GameChannel do
   use CheckersWeb, :channel
   alias Checkers.Game
   alias Checkers.GameBackup
-  alias Checkers.Players
 
 
   def join("game:" <> id, payload, socket) do
@@ -11,6 +10,7 @@ defmodule CheckersWeb.GameChannel do
       socket = socket
       |> assign(:game, game)
       |> assign(:name, id)
+      GameBackup.save(socket.assigns[:name], game)
       {:ok, %{"game" => game}, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -42,13 +42,16 @@ defmodule CheckersWeb.GameChannel do
 
   def handle_in("new", payload, socket) do
     game = Game.new()
-#    players = Map.fetch!(GameBackup.load(socket.assigns[:name]), :players)
-#    if Enum.fetch!(players, 0) do
-#      game = Game.add_player(game, Enum.fetch!(players, 0))
-#    end
-#    if Enum.fetch!(players, 1) do
-#      game = Game.add_player(game, Enum.fetch!(players, 1))
-#    end
+    players = Map.fetch!(GameBackup.load(socket.assigns[:name]), :players)
+    if length(players) == 2 do
+      if Enum.fetch!(players, 0) do
+        game = Game.add_player(game, Enum.fetch!(players, 0))
+      end
+      if Enum.fetch!(players, 1) do
+        game = Game.add_player(game, Enum.fetch!(players, 1))
+      end
+      Map.put(game, :players, true)
+    end
     socket = assign(socket, :game, game)
     GameBackup.save(socket.assigns[:name], game)
     broadcast socket, "shout", %{"game" => game}

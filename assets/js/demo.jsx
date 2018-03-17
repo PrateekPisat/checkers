@@ -156,9 +156,7 @@ newGame()
 					<div className="row">
 						<button className="btn btn-info" name="Restart" onClick={() => this.newGame()} >New Game</button>
 					</div>
-					<div className="row">
-						<a href="http:\\prateekpisat.com"><button className="btn btn-info" name="Back to HomePage">Back</button></a>
-					</div>
+					
 				</div>
 		      </div>
 		 </div>

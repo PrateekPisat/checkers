@@ -28,16 +28,29 @@ import $ from "jquery"
  	if(root)
  	{
       //console.log(sessionStorage.getItem(player_name));
-   		let channel = socket.channel("game:" + "1", {});
+   		let channel = socket.channel("game:" + sessionStorage.getItem("id"), {});
    		run_demo(root, channel, sessionStorage.getItem(name));
 
    	}
    	if(document.getElementById('index-page'))
    	{
-   		 $('#game-button').click(() => {
-   		 	sessionStorage.setItem(name, $('#game-input').val())
-     	});
+      $(".btn").click(start_click)
+   		//  $('.btn').click(() => {
+   		//  	sessionStorage.setItem(name, $('#game-input').val())
+     	// });
    	}
+ }
+
+ function start_click(ev)
+ {
+   let btn = $(ev.target);
+   let id = btn.data('id');
+   sessionStorage.setItem("id", id)
+   $('.game-input').each( (_, bb) => {
+     if (id == $(bb).data('id')) {
+       sessionStorage.setItem(name, $(bb).val())
+     }
+   });
  }
 
  // Use jQuery to delay until page loaded.

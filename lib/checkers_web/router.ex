@@ -18,6 +18,8 @@ defmodule CheckersWeb.Router do
 
     get "/", PageController, :index
     get "/game/:game", PageController, :game
+    get "/newchannel", PageController, :newchannel
+    get "/deletechannel", PageController, :deletechannel
   end
 
   # Other scopes may use custom stacks.

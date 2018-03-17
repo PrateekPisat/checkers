@@ -18,7 +18,7 @@ defmodule Checkers.Game do
     		index2: -1,
     		char1: "",
     		char2: "",
-    		clickable: true,
+    		clickable: false,
         currentPlayer: "1",
 				kings: [
 					false, false, false, false, false, false, false, false,

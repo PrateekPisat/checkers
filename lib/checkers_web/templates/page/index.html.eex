@@ -9,7 +9,7 @@
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
-		
+
 	</script>
 	<title>Checkers</title>
 	<style>
@@ -19,12 +19,16 @@
 <h1>Checkers</h1>
 <div class="container">
 	<div class="row">
-  	<div class="col">
-    	<h1 id ="index-page">Join a Game</h1>
-    	Enter Your Name:<br>
-    	<p><input type="text" id="game-input"></p>
-	    <a href="/game/:game"><button class="btn" id="game-button">Start Game</button></a>
-  	</div>
+		<%= for channel <- @no_channels do %>
+	  	<div class="col">
+	    	<h1 id ="index-page">Join a Game</h1>
+	    	Enter Your Name:<br>
+	    	<p><input type="text" class="game-input" data-id="<%= channel %>"></p>
+		    <a href="/game/:game"><button class="btn" data-id="<%= channel %>">Start Game</button></a>
+				<a href="/newchannel">New Channel</a>
+				<a href="/deletechannel">Delete Channel</a>
+	  	</div>
+		<% end %>
 	</div>
 </div>
 </body>
