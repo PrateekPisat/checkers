@@ -23,7 +23,8 @@ class Demo extends React.Component {
   currentPlayer: "",
   kings: [],
   winner: "",
-  players: []
+  players: [],
+  message: ""
  	};
     this.playername = props.playername
     this.name = props.name
@@ -79,10 +80,23 @@ newGame()
 	this.channel.push("new")
 }
 
+quit()
+{
+  this.channel.push("quit", {name: this.playername})
+              .receive("ok", resp => {console.log(this.playername + " left the game.")})
+  alert("Leaving the game")
+  window.location.replace("/");
+}
+
   render() {
     var toggle = 0;
 		return (
 		<div className="container">
+      <div className="row">
+        <div className="col">
+          <h4>{this.state.message}</h4>
+        </div>
+      </div>
 			<div className="row">
 				<div className="col">
 					<div className="board">
@@ -156,7 +170,9 @@ newGame()
 					<div className="row">
 						<button className="btn btn-info" name="Restart" onClick={() => this.newGame()} >New Game</button>
 					</div>
-					
+          <div className="row">
+						<button className="btn btn-info" name="Quit" onClick={() => this.quit()} >Leave Game</button>
+					</div>
 				</div>
 		      </div>
 		 </div>

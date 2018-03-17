@@ -32,14 +32,17 @@ defmodule Checkers.Game do
 				],
 				winner: "",
 				players: [],
+				message: "",
     	}
     end
 
  def add_player(state, player_name) do
  	players = state.players
 	clickable = state.clickable
-	if(length(players) < 2) do
+	message = player_name <> " joined the game"
+	if(length(players) < 2 && !Enum.member?(players, player_name)) do
 		players = players ++  [player_name]
+		message = message <> " as Player " <> to_string(length(players))
 	end
 	if length(players) == 2 do
 		clickable = true
@@ -57,7 +60,18 @@ defmodule Checkers.Game do
 		kings: state.kings,
 		winner: state.winner,
 		players: players,
+		message: message,
 	}
+ end
+
+ def delete_player(state, player_name) do
+ 	players = Map.fetch!(state, :players)
+	if Enum.member?(players, player_name) do
+		players = List.delete(players, player_name)
+	end
+	state = Map.put(state, :players, players)
+	state = Map.put(state, :message, player_name <> " left the game!")
+	state
  end
 
 	def update_state(state, index, last_index, char, player_name) do
@@ -68,12 +82,6 @@ defmodule Checkers.Game do
 			winner = state.winner
 			board = state.board
 			if is_valid?(last_index, index, board, kings) do
-				if !Enum.any?(board, fn(x) -> x == "2" end) do
-					winner = "1"
-				end
-				if !Enum.any?(board, fn(x) -> x == "1" end) do
-					winner = "2"
-				end
 			    pos1 = Enum.fetch!(board, last_index)
 					if player_name == Enum.fetch!(state.players, String.to_integer(currentPlayer) - 1) do
 		        pos2 = Enum.fetch!(board, index)
@@ -126,6 +134,7 @@ defmodule Checkers.Game do
 								winner = "2"
 							end
 						end
+						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
 		        %{
 		          board: board,
 		          score: state.score,
@@ -139,11 +148,13 @@ defmodule Checkers.Game do
 							kings: kings,
 							winner: winner,
 							players: state.players,
+							message: message,
 		        }
 					else
 						state
 				end
 			else
+				state = Map.put(state, :message, "Not a valid move")
 				state
 			end
 		end
@@ -205,4 +216,5 @@ defmodule Checkers.Game do
 			true -> false
 		end
 	end
+
 end

@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<script type="text/javascript">
-
-	</script>
 	<title>Checkers</title>
 	<style>
 	</style>
@@ -21,14 +11,18 @@
 	<div class="row">
 		<%= for channel <- @no_channels do %>
 	  	<div class="col">
-	    	<h1 id ="index-page">Join a Game</h1>
+	    	<h1 id ="index-page">Join Game <%= channel %></h1>
 	    	Enter Your Name:<br>
 	    	<p><input type="text" class="game-input" data-id="<%= channel %>"></p>
-		    <a href="/game/:game"><button class="btn" data-id="<%= channel %>">Start Game</button></a>
-				<a href="/newchannel">New Channel</a>
-				<a href="/deletechannel">Delete Channel</a>
+		    <a href="/game/:name"><button class="btn" data-id="<%= channel %>">Join This Game!</button></a>
 	  	</div>
 		<% end %>
+	</div>
+	<div class="row">
+		<a href="/newchannel">New Channel</a><br>
+	</div>
+	<div class="row">
+		<a href="/deletechannel">Delete Last Channel</a>
 	</div>
 </div>
 </body>

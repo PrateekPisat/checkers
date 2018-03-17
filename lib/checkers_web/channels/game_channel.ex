@@ -50,13 +50,22 @@ defmodule CheckersWeb.GameChannel do
       if Enum.fetch!(players, 1) do
         game = Game.add_player(game, Enum.fetch!(players, 1))
       end
-      Map.put(game, :players, true)
+      game = Map.put(game, :clickable, true)
     end
+    game = Map.put(game, :message, "New Game. " <> to_string(Enum.fetch!(players, 0)) <> " 's turn to Play")
     socket = assign(socket, :game, game)
     GameBackup.save(socket.assigns[:name], game)
     broadcast socket, "shout", %{"game" => game}
     {:noreply, socket}
-end
+  end
+
+  def handle_in("quit", payload, socket) do
+    game = Game.delete_player(GameBackup.load(socket.assigns[:name]), payload["name"])
+    socket = assign(socket, :game, game)
+    GameBackup.save(socket.assigns[:name], game)
+    broadcast socket, "shout", %{"game" => game}
+    {:noreply, socket}
+  end
 
   # Add authorization logic here as required.
   defp authorized?(_payload) do

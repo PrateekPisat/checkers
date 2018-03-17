@@ -52,6 +52,5 @@ import $ from "jquery"
      }
    });
  }
-
  // Use jQuery to delay until page loaded.
  $(start());
