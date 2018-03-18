@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script>
+		window.score_path = "<%= score_path(@conn, :index) %>"
+	</script>
 	<style>
 	.board {
 		display: flex;

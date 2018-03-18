@@ -7,22 +7,30 @@
 </head>
 <body>
 <h1>Checkers</h1>
-<div class="container">
-	<div class="row">
-		<%= for channel <- @no_channels do %>
-	  	<div class="col">
-	    	<h1 id ="index-page">Join Game <%= channel %></h1>
-	    	Enter Your Name:<br>
-	    	<p><input type="text" class="game-input" data-id="<%= channel %>"></p>
-		    <a href="/game/:name"><button class="btn" data-id="<%= channel %>">Join This Game!</button></a>
-	  	</div>
+<div class="container-fluid">
+	<div class="col-md-6">
+		<div class="row">
+			<%= for channel <- @no_channels do %>
+		  	<div class="col">
+		    	<h1 id ="index-page">Join Game <%= channel %></h1>
+		    	Enter Your Name:<br>
+		    	<p><input type="text" class="game-input" data-id="<%= channel %>"></p>
+			    <a href="/game/:name"><button class="btn" data-id="<%= channel %>">Join This Game!</button></a>
+		  	</div>
+			<% end %>
+		</div>
+		<div class="row">
+			<a href="/newchannel">New Channel</a><br>
+		</div>
+		<div class="row">
+			<a href="/deletechannel">Delete Last Channel</a>
+		</div>
+	</div>
+	<div className="col-md-6">
+		<h4>Highscores</h4>
+		<%= for score <- @scores do %>
+			<%= score.player1 %> beat <%=score.player2%> in <%=score.game_time%> <br>
 		<% end %>
-	</div>
-	<div class="row">
-		<a href="/newchannel">New Channel</a><br>
-	</div>
-	<div class="row">
-		<a href="/deletechannel">Delete Last Channel</a>
 	</div>
 </div>
 </body>

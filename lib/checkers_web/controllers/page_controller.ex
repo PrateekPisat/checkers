@@ -1,11 +1,13 @@
 defmodule CheckersWeb.PageController do
   use CheckersWeb, :controller
   alias Checkers.NoChannels
+  alias Checkers.Highscore
 
   def index(conn, _params) do
     no_channels = NoChannels.load("Checkers") || [1]
     NoChannels.save("Checkers", no_channels)
-    render conn, "index.html", no_channels: no_channels
+    scores = Highscore.highscore()
+    render conn, "index.html", no_channels: no_channels, scores: scores
   end
 
   def game(conn, _params) do

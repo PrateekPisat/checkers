@@ -61,14 +61,66 @@ handleClick(index)
 passToState(gameState)
 {
   console.log(gameState.game)
+  if(gameState.game.players.length == 2)
+  {
+    if(sessionStorage.getItem("start_time") == null)
+    {
+      let start_time = new Date()
+      sessionStorage.setItem("start_time", start_time)
+    }
+  }
   if(gameState.game.winner == "1")
   {
     alert("Player 1 wins!");
+    let current_time = new Date();
+    let start_time = new Date(sessionStorage.getItem("start_time"));
+    sessionStorage.setItem("start_time", null)
+    let startSecond = start_time.getSeconds();
+    let startMinute = start_time.getMinutes();
+    let startHour = start_time.getHours();
+    let endSecond = current_time.getSeconds();
+    let endMinute = current_time.getMinutes();
+    let endHour = current_time.getHours();
+    let text = JSON.stringify({
+          player1: gameState.game.players[0],
+          player2: gameState.game.players[1],
+          second: endSecond - startSecond,
+          minute: endMinute - startMinute,
+          hour: endHour - startHour,
+    });
+    $.ajax(score_path, {
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    data: text,
+  });
     this.newGame();
   }
   else if(gameState.game.winner == "2")
   {
     alert("Player 2 wins!");
+    let current_time = new Date();
+    let start_time = new Date(sessionStorage.getItem("start_time"));
+    sessionStorage.setItem("start_time", null)
+    let startSecond = start_time.getSeconds();
+    let startMinute = start_time.getMinutes();
+    let startHour = start_time.getHours();
+    let endSecond = current_time.getSeconds();
+    let endMinute = current_time.getMinutes();
+    let endHour = current_time.getHours();
+    let text = JSON.stringify({
+          player1: gameState.game.players[1],
+          player2: gameState.game.players[0],
+          second: endSecond - startSecond,
+          minute: endMinute - startMinute,
+          hour: endHour - startHour,
+    });
+    $.ajax(score_path, {
+    method: "POST",
+    dataType: "json",
+    contentType: "application/json; charset=UTF-8",
+    data: text,
+  });
     this.newGame();
   }
   else
