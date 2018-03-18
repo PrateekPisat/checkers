@@ -91,7 +91,7 @@ quit()
   render() {
     var toggle = 0;
 		return (
-		<div className="container">
+		<div className="container-fluid">
       <div className="row">
         <div className="col">
           <h4>{this.state.message}</h4>

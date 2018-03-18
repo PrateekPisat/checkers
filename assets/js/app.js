@@ -31,6 +31,15 @@ import $ from "jquery"
    		let channel = socket.channel("game:" + sessionStorage.getItem("id"), {});
    		run_demo(root, channel, sessionStorage.getItem(name));
 
+      $('#text-input').keypress(function(ev)
+      {
+          if (ev.keyCode == 13)
+          {
+            channel.push("new_msg", {message: sessionStorage.getItem(name) + ": "+ $('#text-input').val()})
+          }
+      });
+
+      channel.on("new_msg", resp => {setText(resp)})
    	}
    	if(document.getElementById('index-page'))
    	{
@@ -39,6 +48,12 @@ import $ from "jquery"
    		//  	sessionStorage.setItem(name, $('#game-input').val())
      	// });
    	}
+ }
+
+ function setText(resp)
+ {
+   var text = $('#message-box').html() + "\n" + resp.msg
+   $("#message-box").html(text.replace(/\n/g, "<br />"));
  }
 
  function start_click(ev)

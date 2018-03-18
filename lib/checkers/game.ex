@@ -46,28 +46,19 @@ defmodule Checkers.Game do
 	end
 	if length(players) == 2 do
 		clickable = true
+		message = message <> ". " <> to_string(Enum.fetch!(state.players, String.to_integer(state.currentPlayer) - 1)) <> "'s turn to play!"
 	end
-	%{
-		board: state.board,
-		score: state.score,
-		noClick: state.noClick,
-		index1: state.index1,
-		index2: state.index2,
-		char1: state.char1,
-		char2: state.char2,
-		clickable: clickable,
-		currentPlayer: state.currentPlayer,
-		kings: state.kings,
-		winner: state.winner,
-		players: players,
-		message: message,
-	}
+	state = Map.put(state, :clickable, clickable)
+	|> Map.put(:players, players)
+	|> Map.put(:message, message)
+	state
  end
 
  def delete_player(state, player_name) do
  	players = Map.fetch!(state, :players)
 	if Enum.member?(players, player_name) do
 		players = List.delete(players, player_name)
+		state = new()
 	end
 	state = Map.put(state, :players, players)
 	state = Map.put(state, :message, player_name <> " left the game!")
@@ -151,7 +142,8 @@ defmodule Checkers.Game do
 							message: message,
 		        }
 					else
-						state
+						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
+						state = Map.put(state, :message, message)
 				end
 			else
 				state = Map.put(state, :message, "Not a valid move")

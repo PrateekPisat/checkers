@@ -67,6 +67,11 @@ defmodule CheckersWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("new_msg", payload, socket) do
+    broadcast socket, "new_msg", %{"msg" => payload["message"]}
+    {:noreply, socket}
+  end
+
   # Add authorization logic here as required.
   defp authorized?(_payload) do
     true
