@@ -25,6 +25,13 @@ defmodule CheckersWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("first_click", payload, socket) do
+    game = Game.get_paths(GameBackup.load(socket.assigns[:name]), payload["clicks"], payload["index1"], payload["char1"], payload["player_name"])
+    socket = assign(socket, :game, game)
+    GameBackup.save(socket.assigns[:name], game)
+    {:reply, {:ok, %{"game" => game}}, socket}
+  end
+
   def handle_in("click", payload, socket) do
     game = Game.update_state(GameBackup.load(socket.assigns[:name]), payload["index"], payload["index1"], payload["char1"], payload["player_name"])
     socket = assign(socket, :game, game)

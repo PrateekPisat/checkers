@@ -2,15 +2,17 @@ defmodule Checkers.Game do
 
 	 def new() do
     	%{
-      	board: [
-          "1", " ", "1", " ", "1", " ", "1", " ",
-          " ", "1", " ", "1", " ", "1", " ", "1",
-          "1", " ", "1", " ", "1", "", "1", " ",
-          " ", " ", " ", " ", " ", " ", " ", " ",
-          " ", " ", " ", " ", " ", " ", " ", " ",
-          " ", "2", " ", "2", " ", "2", " ", "2",
-          "2", " ", "2", " ", "2", " ", "2", " ",
-          " ", "2", " ", "2", " ", "2", " ", "2",
+				board: [
+					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+          " ", "1", " ", "1", " ", "1", " ", "1", " ", " ",
+          " ", " ", "1", " ", "1", " ", "1", " ", "1", " ",
+          " ", "1", " ", "1", " ", "1", " ", "1", " ", " ",
+          " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+          " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+          " ", " ", "2", " ", "2", " ", "2", " ", "2", " ",
+          " ", "2", " ", "2", " ", "2", " ", "2", " ", " ",
+          " ", " ", "2", " ", "2", " ", "2", " ", "2", " ",
+					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
         ],
     		score: 0,
     		noClick: 0,
@@ -21,14 +23,16 @@ defmodule Checkers.Game do
     		clickable: false,
         currentPlayer: "1",
 				kings: [
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
-					false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
+					false, false, false, false, false, false, false, false, false, false,
 				],
 				winner: "",
 				players: [],
@@ -65,6 +69,24 @@ defmodule Checkers.Game do
 	state
  end
 
+ def get_paths(state, clicks, index1, char1, player_name) do
+ 	if state.clickable do
+		board = state.board
+		if char1 == state.currentPlayer && player_name == Enum.fetch!(state.players, String.to_integer(state.currentPlayer) - 1) do
+		 	index_board = Stream.with_index(board)
+			board = Enum.map(index_board, fn({x, i}) -> if is_valid?(index1, i, board, state.kings) do "3" else x end end)
+			Map.put(state, :board, board)
+			|> Map.put(:noClick, state.noClick + 1)
+			|> Map.put(:char1, char1)
+			|> Map.put(:index1, index1)
+			else
+				Map.put(state, :noClick, state.noClick + 1)
+			end
+		else
+			Map.put(state, :noClick, state.noClick)
+ 		end
+	end
+
 	def update_state(state, index, last_index, char, player_name) do
 		if state.clickable do
 			currentPlayer = state.currentPlayer
@@ -72,7 +94,8 @@ defmodule Checkers.Game do
 			kings = state.kings
 			winner = state.winner
 			board = state.board
-			if is_valid?(last_index, index, board, kings) do
+			if Enum.fetch!(board, index) == "3" do
+					board = Enum.map(board, fn(x) -> if x == "3" do " " else x end end)
 			    pos1 = Enum.fetch!(board, last_index)
 					if player_name == Enum.fetch!(state.players, String.to_integer(currentPlayer) - 1) do
 		        pos2 = Enum.fetch!(board, index)
@@ -82,23 +105,23 @@ defmodule Checkers.Game do
 							kings = List.replace_at(kings, last_index, false)
 			        kings = List.replace_at(kings, index, true)
 						end
-						if pos1 == "1" && index in 55..63 do
+						if pos1 == "1" && index in 81..88 do
 							kings = List.replace_at(kings, index, true)
 						end
-						if pos1 == "2" && index in 0..7 do
+						if pos1 == "2" && index in 11..18 do
 							kings = List.replace_at(kings, index, true)
 						end
-						if index == last_index + 18 || index == last_index + 14 ||
-							 index == last_index - 18 || index == last_index - 14 do
+						if index == last_index + 18 || index == last_index + 22 ||
+							 index == last_index - 18 || index == last_index - 22 do
 							 	cond do
 							 		index == last_index + 18 ->
 										board = List.replace_at(board, last_index + 9, " ")
 										if Enum.fetch!(kings, last_index + 9) do
 											kings = List.replace_at(kings, last_index + 9, false)
 										end
-									index == last_index + 14 ->
-										board = List.replace_at(board, last_index + 7, " ")
-										if Enum.fetch!(kings, last_index + 7) do
+									index == last_index + 22 ->
+										board = List.replace_at(board, last_index + 11, " ")
+										if Enum.fetch!(kings, last_index + 11) do
 											kings = List.replace_at(kings, last_index + 7, false)
 										end
 									index == last_index - 18 ->
@@ -106,10 +129,10 @@ defmodule Checkers.Game do
 										if Enum.fetch!(kings, last_index - 9) do
 											kings = List.replace_at(kings, last_index - 9, false)
 										end
-									index == last_index - 14 ->
-										board = List.replace_at(board, last_index - 7, " ")
-										if Enum.fetch!(kings, last_index - 7) do
-											kings = List.replace_at(kings, last_index - 7, false)
+									index == last_index - 22 ->
+										board = List.replace_at(board, last_index - 11, " ")
+										if Enum.fetch!(kings, last_index - 11) do
+											kings = List.replace_at(kings, last_index - 11, false)
 										end
 							 	end
 						else
@@ -118,18 +141,18 @@ defmodule Checkers.Game do
 			        else
 			          nextPlayer = "1"
 			        end
-							if !Enum.any?(board, fn(x) -> x == "2" end) do
-								winner = "1"
-							end
-							if !Enum.any?(board, fn(x) -> x == "1" end) do
-								winner = "2"
-							end
+						end
+						if !Enum.any?(board, fn(x) -> x == "2" end) do
+							winner = "1"
+						end
+						if !Enum.any?(board, fn(x) -> x == "1" end) do
+							winner = "2"
 						end
 						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
 		        %{
 		          board: board,
 		          score: state.score,
-		          noClick: 0,
+		          noClick: state.noClick + 1,
 		      		index1: -1,
 		      		index2: -1,
 		      		char1: "",
@@ -143,11 +166,17 @@ defmodule Checkers.Game do
 		        }
 					else
 						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
-						state = Map.put(state, :message, message)
+						board = Enum.map(board, fn(x) -> if x == "3" do " " else x end end)
+						state = Map.put(state, :message, "Not a valid move")
+						|> Map.put(:board, board)
+						|> Map.put(:noClick, state.noClick + 1)
 				end
 			else
+				board = state.board
+				board = Enum.map(board, fn(x) -> if x == "3" do " " else x end end)
 				state = Map.put(state, :message, "Not a valid move")
-				state
+				|> Map.put(:noClick, state.noClick + 1)
+				|> Map.put(:board, board)
 			end
 		end
 	end
@@ -156,14 +185,14 @@ defmodule Checkers.Game do
 		cond do
 			Enum.fetch!(kings, from) == true ->
  			 cond do
-  				(to == from + 9 || to == from + 7 || to == from - 9 || to == from - 7)
+  				(to == from + 9 || to == from + 11 || to == from - 9 || to == from - 11)
   				&& (Enum.fetch!(board, to) == " ")
   				&& (to != from) ->
   						true
   				((to == from + 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)))||
-  				 (to == from + 14 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 7)))||
+  				 (to == from + 22 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11)))||
  				 	to == from - 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9))||
-  					to == from - 14 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 7)))
+  					to == from - 22 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 11)))
   				&& (Enum.fetch!(board, to) == " ")
   				&& (to != from) ->
   						true
@@ -172,12 +201,12 @@ defmodule Checkers.Game do
   			end
 		 Enum.fetch!(board, from ) == "1" ->
 			cond do
-				(to == from + 9 || to == from + 7)
+				(to == from + 9 || to == from + 11)
 				&& (Enum.fetch!(board, to) == " ")
 				&& (to != from) ->
 						true
 				((to == from + 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)))||
-				 (to == from + 14 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 7))))
+				 (to == from + 22 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11))))
 				&& (Enum.fetch!(board, to) == " ")
 				&& (to != from) ->
 						true
@@ -186,12 +215,12 @@ defmodule Checkers.Game do
 			end
 			Enum.fetch!(board, from ) == "2" ->
 			cond do
-				(to == from - 9 || to == from - 7)
+				(to == from - 11 || to == from - 9)
 				&& (Enum.fetch!(board, to) == " ")
 				&& (to != from) ->
 						true
 				(to == from - 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9))||
-				to == from - 14 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 7)))
+				to == from - 22 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 11)))
 				&& (Enum.fetch!(board, to) == " ")
 				&& (to != from) ->
 						true

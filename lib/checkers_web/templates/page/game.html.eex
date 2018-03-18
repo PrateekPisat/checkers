@@ -39,6 +39,19 @@
 		background-color :#BA7A3A;
 	}
 
+	.path-square {
+		height: 100px;
+		width: 100px;
+		box-sizing: border-box;
+		border: 5px solid black;
+		font-size: 5em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color :#704923;
+	}
+
+
 	.white-square:hover {
 		cursor: pointer;
 		background-color: #80cd92;
@@ -78,27 +91,31 @@
 	 }
 
 	 #text-input{
-		 width: 800px;
+		 display: flex;
+     width: 600px;
+ 		 align: right;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
 	 }
 
 	 #root{
 		 padding: 10px;
-
 	 }
+	 
 }
 	</style>
 </head>
 <body>
 <h1>Checkers</h1>
-	<div class="col-md-6">
+	<div class="col-md-8">
 			<div id="root">
   				Loading...
 			</div>
 	</div>
-	<div class="col-md-6">
-		<pre>
+	<div class="col-md-4">
+		Chat With People on the Channel
 		<div id="message-box">
-		</pre>
 		</div>
 		<div class="row">
   				<input type="text" placeholder="Enter your message!" id="text-input">

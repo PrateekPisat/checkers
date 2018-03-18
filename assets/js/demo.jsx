@@ -48,11 +48,13 @@ handleClick(index)
            this.channel.push("click", {index: index, index1: this.state.index1, char1: this.state.char1, player_name: this.playername})
        }
       else {
-        this.setState({
-          noClick: this.state.noClick + 1,
-          char1: this.state.board[index],
-          index1: index
-        })
+        this.channel.push("first_click", {clicks: this.state.noClick, char1: this.state.board[index], index1: index, player_name: this.playername})
+                    .receive("ok", this.passToState.bind(this))
+        // this.setState({
+        //   noClick: this.state.noClick + 1,
+        //   char1: this.state.board[index],
+        //   index1: index
+        // })
     }
   }
 }
@@ -61,20 +63,18 @@ handleClick(index)
 passToState(gameState)
 {
   console.log(gameState.game)
-  if(gameState.game.players.length == 2)
+  if(!this.state.clickable && gameState.game.clickable)
   {
-    if(sessionStorage.getItem("start_time") == null)
-    {
-      let start_time = new Date()
-      sessionStorage.setItem("start_time", start_time)
-    }
+    var start_time = new Date();
+    sessionStorage.setItem("start_time", start_time);
+    sessionStorage.getItem("start_time")
   }
   if(gameState.game.winner == "1")
   {
     alert("Player 1 wins!");
     let current_time = new Date();
     let start_time = new Date(sessionStorage.getItem("start_time"));
-    sessionStorage.setItem("start_time", null)
+    console.log(start_time);
     let startSecond = start_time.getSeconds();
     let startMinute = start_time.getMinutes();
     let startHour = start_time.getHours();
@@ -101,7 +101,6 @@ passToState(gameState)
     alert("Player 2 wins!");
     let current_time = new Date();
     let start_time = new Date(sessionStorage.getItem("start_time"));
-    sessionStorage.setItem("start_time", null)
     let startSecond = start_time.getSeconds();
     let startMinute = start_time.getMinutes();
     let startHour = start_time.getHours();
@@ -129,6 +128,8 @@ passToState(gameState)
 
 newGame()
 {
+  let start_time = new Date();
+  sessionStorage.setItem("start_time", start_time)
 	this.channel.push("new")
 }
 
@@ -142,8 +143,14 @@ quit()
 
   render() {
     var toggle = 0;
+
 		return (
 		<div className="container-fluid">
+      <div className="row">
+        <div className="col">
+          <h4>Player Name: {this.playername}</h4>
+        </div>
+      </div>
       <div className="row">
         <div className="col">
           <h4>{this.state.message}</h4>
@@ -153,9 +160,11 @@ quit()
 				<div className="col">
 					<div className="board">
 						{this.state.board.map((cell, index) => {
-              if (toggle % 2 == 0)
-                {
-                  if (index == 7 || index == 15 || index == 23 || index == 31 || index == 39 || index == 47 || index == 55)
+              if ((index >=11) && (index <= 88) && ![10, 20, 30, 40, 50, 60, 70, 80, 19, 29, 39, 49, 59, 69, 79, 89].includes(index) )
+              {
+              if (toggle % 2 == 1)
+              {
+                  if (index == 18 || index == 28 || index == 38 || index == 48 || index == 58 || index == 68 || index == 78)
                     toggle = toggle + 1;
                   if (index % 2 == 0)
                     {
@@ -167,9 +176,12 @@ quit()
                       return <div className="white-square" 	onClick={() => this.handleClick(index)} >
                         <span className="dot" id="black-checker"></span>
                       </div>
+                      else if(cell=="3")
+                      return <div className="path-square" 	onClick={() => this.handleClick(index)} >
+
+                      </div>
                       else {
                         return <div className="white-square" 	onClick={() => this.handleClick(index)} >
-                          {cell}
                         </div>
                       }
                     }
@@ -183,16 +195,20 @@ quit()
                       return <div className="black-square" 	onClick={() => this.handleClick(index)} >
                         <span className="dot" id="black-checker"></span>
                       </div>
+                      else if(cell=="3")
+                      return <div className="path-square" 	onClick={() => this.handleClick(index)} >
+
+                      </div>
                       else {
                         return <div className="black-square">
-                          {cell}
+
                         </div>
                       }
                     }
                   }
               else
                 {
-                  if (index == 7 || index == 15 || index == 23 || index == 31 || index == 39 || index == 47 || index == 55)
+                  if (index == 18 || index == 28 || index == 38 || index == 48 || index == 58 || index == 68 || index == 78)
                     toggle = toggle + 1;
                   if (index % 2 == 1)
                   {
@@ -204,15 +220,19 @@ quit()
                     return <div className="white-square" 	onClick={() => this.handleClick(index)} >
                       <span className="dot" id="black-checker"></span>
                     </div>
+                    else if(cell=="3")
+                    return <div className="path-square" 	onClick={() => this.handleClick(index)} >
+                    </div>
                     else {
                       return <div className="white-square" 	onClick={() => this.handleClick(index)} >
-                        {cell}
+
                       </div>
                     }
                   }
                   else
                     return <div className="black-square"  >{cell}</div>
                 }
+              }
             }
           )
         }
