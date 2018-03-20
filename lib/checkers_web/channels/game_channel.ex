@@ -26,23 +26,37 @@ defmodule CheckersWeb.GameChannel do
   end
 
   def handle_in("first_click", payload, socket) do
-    game = Game.get_paths(GameBackup.load(socket.assigns[:name]), payload["clicks"], payload["index1"], payload["char1"], payload["player_name"])
-    socket = assign(socket, :game, game)
-    GameBackup.save(socket.assigns[:name], game)
-    {:reply, {:ok, %{"game" => game}}, socket}
+    game = GameBackup.load(socket.assigns[:name])
+    currentPlayer = Map.get(game, :currentPlayer)
+    players = Map.get(game, :players)
+    if payload["player_name"] == Enum.fetch!(players, String.to_integer(currentPlayer) - 1) do
+      game = Game.get_paths(game, payload["clicks"], payload["index1"], payload["char1"], payload["player_name"])
+      socket = assign(socket, :game, game)
+      GameBackup.save(socket.assigns[:name], game)
+      {:reply, {:ok, %{"game" => game}}, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_in("click", payload, socket) do
-    case Game.update_state(GameBackup.load(socket.assigns[:name]), payload["index"], payload["index1"], payload["char1"], payload["player_name"]) do
-      {:ok, game} ->
-       socket = assign(socket, :game, game)
-       GameBackup.save(socket.assigns[:name], game)
-       broadcast socket, "shout", %{"game" => game}
-       {:noreply, socket}
-      {:error, game} ->
-        socket = assign(socket, :game, game)
-        GameBackup.save(socket.assigns[:name], game)
-        {:reply, {:error, %{"game" => game }}, socket}
+    game = GameBackup.load(socket.assigns[:name])
+    currentPlayer = Map.get(game, :currentPlayer)
+    players = Map.get(game, :players)
+    if payload["player_name"] == Enum.fetch!(players, String.to_integer(currentPlayer) - 1) do
+      case Game.update_state(GameBackup.load(socket.assigns[:name]), payload["index"], payload["index1"], payload["char1"], payload["player_name"]) do
+        {:ok, game} ->
+         socket = assign(socket, :game, game)
+         GameBackup.save(socket.assigns[:name], game)
+         broadcast socket, "shout", %{"game" => game}
+         {:noreply, socket}
+        {:error, game} ->
+          socket = assign(socket, :game, game)
+          GameBackup.save(socket.assigns[:name], game)
+          {:reply, {:error, %{"game" => game }}, socket}
+      end
+    else
+      {:noreply, socket}
     end
   end
 
@@ -55,21 +69,26 @@ defmodule CheckersWeb.GameChannel do
 
   def handle_in("new", payload, socket) do
     game = Game.new()
-    players = Map.fetch!(GameBackup.load(socket.assigns[:name]), :players)
-    if length(players) == 2 do
-      if Enum.fetch!(players, 0) do
-        game = Game.add_player(game, Enum.fetch!(players, 0))
+    players = Map.get(GameBackup.load(socket.assigns[:name]), :players)
+    if Enum.member?(players, payload["name"]) do
+      players = Map.fetch!(GameBackup.load(socket.assigns[:name]), :players)
+      if length(players) == 2 do
+        if Enum.fetch!(players, 0) do
+          game = Game.add_player(game, Enum.fetch!(players, 0))
+        end
+        if Enum.fetch!(players, 1) do
+          game = Game.add_player(game, Enum.fetch!(players, 1))
+        end
+        game = Map.put(game, :clickable, true)
       end
-      if Enum.fetch!(players, 1) do
-        game = Game.add_player(game, Enum.fetch!(players, 1))
-      end
-      game = Map.put(game, :clickable, true)
+      game = Map.put(game, :message, "New Game. " <> to_string(Enum.fetch!(players, 0)) <> " 's turn to Play")
+      socket = assign(socket, :game, game)
+      GameBackup.save(socket.assigns[:name], game)
+      broadcast socket, "shout", %{"game" => game}
+      {:noreply, socket}
+    else
+      {:noreply, socket}
     end
-    game = Map.put(game, :message, "New Game. " <> to_string(Enum.fetch!(players, 0)) <> " 's turn to Play")
-    socket = assign(socket, :game, game)
-    GameBackup.save(socket.assigns[:name], game)
-    broadcast socket, "shout", %{"game" => game}
-    {:noreply, socket}
   end
 
   def handle_in("quit", payload, socket) do

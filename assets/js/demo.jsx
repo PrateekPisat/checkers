@@ -42,8 +42,6 @@ handleClick(index)
 {
 		if(this.state.clickable)
     {
-      if(this.playername == this.state.players[parseInt(this.state.currentPlayer) - 1])
-      {
         //console.log(index)
         if(this.state.noClick % 2 == 1 && this.state.noClick > 0)
   			   {
@@ -54,7 +52,6 @@ handleClick(index)
           this.channel.push("first_click", {clicks: this.state.noClick, char1: this.state.board[index], index1: index, player_name: this.playername})
                       .receive("ok", this.passToState.bind(this))
       }
-    }
   }
 }
 
@@ -87,12 +84,15 @@ passToState(gameState)
           minute: endMinute - startMinute,
           hour: endHour - startHour,
     });
-    $.ajax(score_path, {
-    method: "POST",
-    dataType: "json",
-    contentType: "application/json; charset=UTF-8",
-    data: text,
-  });
+    if (gameState.game.players[0] == this.playername)
+    {
+        $.ajax(score_path, {
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json; charset=UTF-8",
+        data: text,
+      });
+    }
     this.newGame();
   }
   else if(gameState.game.winner == "2")
@@ -113,12 +113,15 @@ passToState(gameState)
           minute: endMinute - startMinute,
           hour: endHour - startHour,
     });
-    $.ajax(score_path, {
-    method: "POST",
-    dataType: "json",
-    contentType: "application/json; charset=UTF-8",
-    data: text,
-  });
+    if (gameState.game.players[0] == this.playername)
+    {
+        $.ajax(score_path, {
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json; charset=UTF-8",
+        data: text,
+      });
+    }
     this.newGame();
   }
   else
@@ -127,12 +130,9 @@ passToState(gameState)
 
 newGame()
 {
-  if(this.state.players.includes(this.playername))
-  {
     let start_time = new Date();
     sessionStorage.setItem("start_time", start_time)
-	   this.channel.push("new")
-   }
+	   this.channel.push("new", {name: this.playername})
 }
 
 quit()
