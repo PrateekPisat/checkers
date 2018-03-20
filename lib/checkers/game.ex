@@ -3,16 +3,16 @@ defmodule Checkers.Game do
 	 def new() do
     	%{
 				board: [
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-          " ", "1", " ", "1", " ", "1", " ", "1", " ", " ",
-          " ", " ", "1", " ", "1", " ", "1", " ", "1", " ",
-          " ", "1", " ", "1", " ", "1", " ", "1", " ", " ",
-          " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-          " ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
-          " ", " ", "2", " ", "2", " ", "2", " ", "2", " ",
-          " ", "2", " ", "2", " ", "2", " ", "2", " ", " ",
-          " ", " ", "2", " ", "2", " ", "2", " ", "2", " ",
-					" ", " ", " ", " ", " ", " ", " ", " ", " ", " ",
+					"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
+          "0", "1", " ", "1", " ", "1", " ", "1", " ", "0",
+          "0", " ", "1", " ", "1", " ", "1", " ", "1", "0",
+          "0", "1", " ", "1", " ", "1", " ", "1", " ", "0",
+          "0", " ", " ", " ", " ", " ", " ", " ", " ", "0",
+          "0", " ", " ", " ", " ", " ", " ", " ", " ", "0",
+          "0", " ", "2", " ", "2", " ", "2", " ", "2", "0",
+          "0", "2", " ", "2", " ", "2", " ", "2", " ", "0",
+          "0", " ", "2", " ", "2", " ", "2", " ", "2", "0",
+					"0", "0", "0", "0", "0", "0", "0", "0", "0", "0",
         ],
     		score: 0,
     		noClick: 0,
@@ -55,7 +55,6 @@ defmodule Checkers.Game do
 	state = Map.put(state, :clickable, clickable)
 	|> Map.put(:players, players)
 	|> Map.put(:message, message)
-	state
  end
 
  def delete_player(state, player_name) do
@@ -66,13 +65,12 @@ defmodule Checkers.Game do
 	end
 	state = Map.put(state, :players, players)
 	state = Map.put(state, :message, player_name <> " left the game!")
-	state
  end
 
  def get_paths(state, clicks, index1, char1, player_name) do
  	if state.clickable do
 		board = state.board
-		if char1 == state.currentPlayer && player_name == Enum.fetch!(state.players, String.to_integer(state.currentPlayer) - 1) do
+		if char1 == state.currentPlayer do
 		 	index_board = Stream.with_index(board)
 			board = Enum.map(index_board, fn({x, i}) -> if is_valid?(index1, i, board, state.kings) do "3" else x end end)
 			Map.put(state, :board, board)
@@ -97,7 +95,6 @@ defmodule Checkers.Game do
 			if Enum.fetch!(board, index) == "3" do
 					board = Enum.map(board, fn(x) -> if x == "3" do " " else x end end)
 			    pos1 = Enum.fetch!(board, last_index)
-					if player_name == Enum.fetch!(state.players, String.to_integer(currentPlayer) - 1) do
 		        pos2 = Enum.fetch!(board, index)
 		        board = List.replace_at(board, last_index, " ")
 		        board = List.replace_at(board, index, char)
@@ -142,42 +139,32 @@ defmodule Checkers.Game do
 			          nextPlayer = "1"
 			        end
 						end
-						if !Enum.any?(board, fn(x) -> x == "2" end) do
+						if !Enum.any?(board, fn(x) -> x == "2" end) || !(no_more_moves("2", board, kings)) do
 							winner = "1"
 						end
-						if !Enum.any?(board, fn(x) -> x == "1" end) do
+						if !Enum.any?(board, fn(x) -> x == "1" end) || !(no_more_moves("1", board, kings)) do
 							winner = "2"
 						end
 						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
-		        %{
-		          board: board,
-		          score: state.score,
-		          noClick: state.noClick + 1,
-		      		index1: -1,
-		      		index2: -1,
-		      		char1: "",
-		      		char2: "",
-		      		clickable: state.clickable,
-							currentPlayer: nextPlayer,
-							kings: kings,
-							winner: winner,
-							players: state.players,
-							message: message,
-		        }
-					else
-						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
-						board = Enum.map(board, fn(x) -> if x == "3" do " " else x end end)
-						state = Map.put(state, :message, "Not a valid move")
-						|> Map.put(:board, board)
-						|> Map.put(:noClick, state.noClick + 1)
-				end
+						state = Map.put(state, :board, board)
+						|> Map.put(:noClick, state.noClick+1)
+						|> Map.put(:index1, -1)
+						|> Map.put(:char1, "")
+						|> Map.put(:currentPlayer, nextPlayer)
+						|> Map.put(:kings, kings)
+						|> Map.put(:winner, winner)
+						|> Map.put(:message, message)
+						{:ok, state}
 			else
 				board = state.board
 				board = Enum.map(board, fn(x) -> if x == "3" do " " else x end end)
 				state = Map.put(state, :message, "Not a valid move")
 				|> Map.put(:noClick, state.noClick + 1)
 				|> Map.put(:board, board)
+				{:error, state}
 			end
+		else
+			{:error, state}
 		end
 	end
 
@@ -185,10 +172,37 @@ defmodule Checkers.Game do
 		cond do
 			Enum.fetch!(kings, from) == true ->
  			 cond do
-  				(to == from + 9 || to == from + 11 || to == from - 9 || to == from - 11)
+  				to == from + 9
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11)) && Enum.fetch!(board, from + 22) == " ")
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9)) && Enum.fetch!(board, from - 18) == " ")
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 11)) && Enum.fetch!(board, from - 22) == " ")
   				&& (Enum.fetch!(board, to) == " ")
   				&& (to != from) ->
   						true
+				 to == from + 11
+				 && !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)) && Enum.fetch!(board, from + 18) == " ")
+				 && !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 11)) && Enum.fetch!(board, from - 22) == " ")
+				 && !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9)) && Enum.fetch!(board, from - 18) == " ")
+				 && (Enum.fetch!(board, to) == " ")
+		  	 && (to != from) ->
+							true
+
+					to == from - 9
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 11)) && Enum.fetch!(board, from - 22) == " ")
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11)) && Enum.fetch!(board, from + 22) == " ")
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)) && Enum.fetch!(board, from + 18) == " ")
+					&& (Enum.fetch!(board, to) == " ")
+					&& (to != from) ->
+								true
+
+					to == from - 11
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9)) && Enum.fetch!(board, from - 18) == " ")
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)) && Enum.fetch!(board, from + 18) == " ")
+					&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11)) && Enum.fetch!(board, from + 22) == " ")
+					&& (Enum.fetch!(board, to) == " ")
+					&& (to != from) ->
+								true
+
   				((to == from + 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)))||
   				 (to == from + 22 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11)))||
  				 	to == from - 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9))||
@@ -201,8 +215,14 @@ defmodule Checkers.Game do
   			end
 		 Enum.fetch!(board, from ) == "1" ->
 			cond do
-				(to == from + 9 || to == from + 11)
+				(to == from + 9)
 				&& (Enum.fetch!(board, to) == " ")
+				&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 11)) && Enum.fetch!(board, from + 22) == " ")
+				&& (to != from) ->
+						true
+				to == from + 11
+				&& (Enum.fetch!(board, to) == " ")
+				&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)) && Enum.fetch!(board, from + 18) == " ")
 				&& (to != from) ->
 						true
 				((to == from + 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from + 9)))||
@@ -215,8 +235,15 @@ defmodule Checkers.Game do
 			end
 			Enum.fetch!(board, from ) == "2" ->
 			cond do
-				(to == from - 11 || to == from - 9)
+
+				(to == from - 11)
 				&& (Enum.fetch!(board, to) == " ")
+				&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9)) && Enum.fetch!(board, from - 18) == " ")
+				&& (to != from) ->
+						true
+				to == from - 9
+				&& (Enum.fetch!(board, to) == " ")
+				&& !(is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 11)) && Enum.fetch!(board, from - 22) == " ")
 				&& (to != from) ->
 						true
 				(to == from - 18 && is_enemy?(Enum.fetch!(board, from), Enum.fetch!(board, from - 9))||
@@ -236,6 +263,13 @@ defmodule Checkers.Game do
 			((current_piece == "2") && (enemy == "1")) -> true
 			true -> false
 		end
+	end
+
+	def no_more_moves(piece, board, kings) do
+		index_board = Stream.with_index(board)
+		only_this_piece = Enum.filter(index_board, fn({x, i}) -> if {x,i} == {piece, i} do {x, i} end end)
+		valid_moves = Enum.map(only_this_piece, fn({x, index1}) -> Enum.any?(index_board, fn({_, i}) -> if is_valid?(index1, i, board, kings) do true else false end end) end)
+		Enum.any?(valid_moves, fn(x) -> if x do true end end)
 	end
 
 end

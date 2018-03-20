@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<title>Checkers</title>
 	<style>
 	#highscore {
@@ -20,6 +21,7 @@
 <div class="container-fluid">
 	<div class="col-md-6">
 		<div class="row">
+			<a href="https://www.itsyourturn.com/t_helptopic2030.html" target="_blank"> Game Rules</a>
 			<%= for channel <- @no_channels do %>
 		  	<div class="col">
 		    	<h1 id ="index-page">Join Game <%= channel %></h1>

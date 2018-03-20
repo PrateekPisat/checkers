@@ -42,19 +42,18 @@ handleClick(index)
 {
 		if(this.state.clickable)
     {
-      //console.log(index)
-      if(this.state.noClick % 2 == 1 && this.state.noClick > 0)
-			   {
-           this.channel.push("click", {index: index, index1: this.state.index1, char1: this.state.char1, player_name: this.playername})
-       }
-      else {
-        this.channel.push("first_click", {clicks: this.state.noClick, char1: this.state.board[index], index1: index, player_name: this.playername})
-                    .receive("ok", this.passToState.bind(this))
-        // this.setState({
-        //   noClick: this.state.noClick + 1,
-        //   char1: this.state.board[index],
-        //   index1: index
-        // })
+      if(this.playername == this.state.players[parseInt(this.state.currentPlayer) - 1])
+      {
+        //console.log(index)
+        if(this.state.noClick % 2 == 1 && this.state.noClick > 0)
+  			   {
+             this.channel.push("click", {index: index, index1: this.state.index1, char1: this.state.char1, player_name: this.playername})
+                         .receive("error", this.passToState.bind(this))
+         }
+        else {
+          this.channel.push("first_click", {clicks: this.state.noClick, char1: this.state.board[index], index1: index, player_name: this.playername})
+                      .receive("ok", this.passToState.bind(this))
+      }
     }
   }
 }
@@ -148,7 +147,7 @@ quit()
 		<div className="container-fluid">
       <div className="row">
         <div className="col">
-          <h4>Player Name: {this.playername}</h4>
+          <h4>Player Name: {this.playername}.</h4>
         </div>
       </div>
       <div className="row">
@@ -169,32 +168,67 @@ quit()
                   if (index % 2 == 0)
                     {
                       if(cell=="1")
-                        return <div className="white-square" 	onClick={() => this.handleClick(index)} >
-                          <span className="dot" id="white-checker"></span>
-                        </div>
+                        {
+                          if(this.state.kings[index])
+                          {
+                            return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                            <span className="dot" id="white-king-checker"></span>
+                            </div>
+                          }
+                          else
+                          {
+                            return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                            <span className="dot" id="white-checker"></span>
+                            </div>
+                          }
+                        }
                       else if(cell=="2")
-                      return <div className="white-square" 	onClick={() => this.handleClick(index)} >
-                        <span className="dot" id="black-checker"></span>
-                      </div>
+                        if(this.state.kings[index])
+                        {
+                          return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                            <span className="dot" id="black-king-checker"></span>
+                          </div>
+                        }
+                        else
+                        {
+                          return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                            <span className="dot" id="black-checker"></span>
+                          </div>
+                        }
                       else if(cell=="3")
-                      return <div className="path-square" 	onClick={() => this.handleClick(index)} >
-
-                      </div>
-                      else {
-                        return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                        return <div className="path-square" 	onClick={() => this.handleClick(index)} >
                         </div>
-                      }
+                      else {
+                          return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                          </div>
+                        }
                     }
                   else
                     {
                       if(cell=="1")
-                        return <div className="black-square" 	onClick={() => this.handleClick(index)} >
-                          <span className="dot" id="white-checker"></span>
-                        </div>
+                        {
+                          if(this.state.kings[index])
+                            return <div className="black-square" 	onClick={() => this.handleClick(index)} >
+                              <span className="dot" id="white-king-checker"></span>
+                            </div>
+                          else {
+                            return <div className="black-square" 	onClick={() => this.handleClick(index)} >
+                              <span className="dot" id="white-checker"></span>
+                            </div>
+                          }
+                        }
                       else if(cell=="2")
-                      return <div className="black-square" 	onClick={() => this.handleClick(index)} >
-                        <span className="dot" id="black-checker"></span>
-                      </div>
+                      {
+                        if(this.state.kings[index])
+                          return <div className="black-square" 	onClick={() => this.handleClick(index)} >
+                            <span className="dot" id="black-king-checker"></span>
+                          </div>
+                        else {
+                          return <div className="black-square" 	onClick={() => this.handleClick(index)} >
+                            <span className="dot" id="black-checker"></span>
+                          </div>
+                        }
+                      }
                       else if(cell=="3")
                       return <div className="path-square" 	onClick={() => this.handleClick(index)} >
 
@@ -213,13 +247,29 @@ quit()
                   if (index % 2 == 1)
                   {
                     if(cell=="1")
-                      return <div className="white-square" 	onClick={() => this.handleClick(index)} >
-                        <span className="dot" id="white-checker"></span>
-                      </div>
+                    {
+                      if(this.state.kings[index])
+                        return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                          <span className="dot" id="white-king-checker"></span>
+                        </div>
+                      else {
+                        return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                          <span className="dot" id="white-checker"></span>
+                        </div>
+                      }
+                    }
                     else if(cell=="2")
-                    return <div className="white-square" 	onClick={() => this.handleClick(index)} >
-                      <span className="dot" id="black-checker"></span>
-                    </div>
+                    {
+                      if(this.state.kings[index])
+                        return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                          <span className="dot" id="black-king-checker"></span>
+                        </div>
+                      else {
+                        return <div className="white-square" 	onClick={() => this.handleClick(index)} >
+                          <span className="dot" id="black-checker"></span>
+                        </div>
+                      }
+                    }
                     else if(cell=="3")
                     return <div className="path-square" 	onClick={() => this.handleClick(index)} >
                     </div>

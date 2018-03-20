@@ -33,11 +33,17 @@ defmodule CheckersWeb.GameChannel do
   end
 
   def handle_in("click", payload, socket) do
-    game = Game.update_state(GameBackup.load(socket.assigns[:name]), payload["index"], payload["index1"], payload["char1"], payload["player_name"])
-    socket = assign(socket, :game, game)
-    GameBackup.save(socket.assigns[:name], game)
-    broadcast socket, "shout", %{"game" => game}
-    {:noreply, socket}
+    case Game.update_state(GameBackup.load(socket.assigns[:name]), payload["index"], payload["index1"], payload["char1"], payload["player_name"]) do
+      {:ok, game} ->
+       socket = assign(socket, :game, game)
+       GameBackup.save(socket.assigns[:name], game)
+       broadcast socket, "shout", %{"game" => game}
+       {:noreply, socket}
+      {:error, game} ->
+        socket = assign(socket, :game, game)
+        GameBackup.save(socket.assigns[:name], game)
+        {:reply, {:error, %{"game" => game }}, socket}
+    end
   end
 
   # It is also common to receive messages from the client and
