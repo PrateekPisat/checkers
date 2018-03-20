@@ -127,9 +127,12 @@ passToState(gameState)
 
 newGame()
 {
-  let start_time = new Date();
-  sessionStorage.setItem("start_time", start_time)
-	this.channel.push("new")
+  if(this.state.players.includes(this.playername))
+  {
+    let start_time = new Date();
+    sessionStorage.setItem("start_time", start_time)
+	   this.channel.push("new")
+   }
 }
 
 quit()

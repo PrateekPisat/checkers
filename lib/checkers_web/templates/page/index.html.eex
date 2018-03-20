@@ -19,7 +19,7 @@
 <body>
 <h1>Checkers</h1>
 <div class="container-fluid">
-	<div class="col-md-6">
+	<div class="col-md-8">
 		<div class="row">
 			<a href="https://www.itsyourturn.com/t_helptopic2030.html" target="_blank"> Game Rules</a>
 			<%= for channel <- @no_channels do %>
@@ -32,13 +32,13 @@
 			<% end %>
 		</div>
 		<div class="row">
-			<a href="/newchannel">New Channel</a><br>
+			<a href="/newchannel">New Lobby</a><br>
 		</div>
 		<div class="row">
-			<a href="/deletechannel">Delete Last Channel</a>
+			<a href="/deletechannel">Delete Last Lobby</a>
 		</div>
 	</div>
-	<div className="col-md-6">
+	<div className="col-md-4">
 		<h4>Highscores</h4><br>
 		Top 10 Fastest Defeats!<br>
 		<table id="highscore">
