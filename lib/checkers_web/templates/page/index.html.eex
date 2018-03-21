@@ -27,6 +27,17 @@
 			    	Enter Your Name:<br>
 			    	<p><input type="text" name="name" class="game-input" id ="game-input" data-id="<%= channel %>" required="true"></p>
 						<p><input type="text" name="channel-id" value="<%= channel %>" hidden></p>
+						<p>
+							<%= if Checkers.GameBackup.load(Integer.to_string(channel)) do %>
+								<%= if (Checkers.GameBackup.load(Integer.to_string(channel)) |> Map.get(:players) |> length()) == 2 do %>
+									This channel is full!. You can Spectate this game. Or try another channel.
+								<% else %>
+									Join this channel as Player <%=  (Checkers.GameBackup.load(Integer.to_string(channel)) |> Map.get(:players) |> length()) + 1 %>
+								<% end %>
+							<% else %>
+								Join this channel as Player 1.
+							<% end %>
+						</p>
 				    <input type="submit" class="btn" data-id="<%= channel %>" href="/game/:name" value="Join This Game!">
 					<% end %>
 		  	</div>
@@ -45,7 +56,7 @@
 		<table id="highscore">
 			<%= for score <- @scores do %>
 				<tr>
-					<td> <%= score.player1 %> beat <%=score.player2%> in <%=score.game_time%></td>
+					<td> <%= score.player1 %> beat <%=score.player2%> in <%=Time.truncate(score.game_time, :second)%></td>
 				</tr>
 		<% end %>
 	</table>
