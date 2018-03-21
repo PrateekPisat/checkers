@@ -44,10 +44,17 @@ import $ from "jquery"
    	if(document.getElementById('index-page'))
    	{
       $(".btn").click(start_click)
-   		//  $('.btn').click(() => {
-   		//  	sessionStorage.setItem(name, $('#game-input').val())
-     	// });
+
    	}
+ }
+
+ function submitform() {
+   var f = document.getElementsByTagName('form')[0];
+   if(f.checkValidity()) {
+     f.submit();
+   } else {
+     alert(document.getElementById('game-input').validationMessage);
+   }
  }
 
  function setText(resp)

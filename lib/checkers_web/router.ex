@@ -17,7 +17,7 @@ defmodule CheckersWeb.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/game/:game", PageController, :game
+    post "/game/:game", PageController, :game
     get "/newchannel", PageController, :newchannel
     get "/deletechannel", PageController, :deletechannel
   end

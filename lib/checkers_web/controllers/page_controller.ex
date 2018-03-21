@@ -11,8 +11,19 @@ defmodule CheckersWeb.PageController do
     render conn, "index.html", no_channels: no_channels, scores: scores
   end
 
-  def game(conn, _params) do
-    render conn, "game.html"
+  def game(conn, %{"name" => name, "channel-id" => channelid}) do
+    if GameBackup.load(channelid) do
+      game = GameBackup.load(channelid)
+      players = Map.get(game, :players)
+      if Enum.member?(players, name) do
+        conn = put_flash(conn, :error, "The Player Name is alaready Taken. Please choose another.")
+        redirect(conn, to: "/")
+      else
+        render conn, "game.html"
+      end
+    else
+      render conn, "game.html"
+    end
   end
 
   def newchannel(conn, _) do

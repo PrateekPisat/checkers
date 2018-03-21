@@ -1,8 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
+
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<title>Checkers</title>
 	<style>
 	#highscore {
     		font-family: helvetica;
@@ -15,8 +12,6 @@
 
 		#highscore tr:hover {background-color: yellow;}
 	</style>
-</head>
-<body>
 <h1>Checkers</h1>
 <div class="container-fluid">
 	<div class="col-md-8">
@@ -24,10 +19,13 @@
 			<a href="https://www.itsyourturn.com/t_helptopic2030.html" target="_blank"> Game Rules</a>
 			<%= for channel <- @no_channels do %>
 		  	<div class="col">
-		    	<h1 id ="index-page">Join Game <%= channel %></h1>
-		    	Enter Your Name:<br>
-		    	<p><input type="text" class="game-input" data-id="<%= channel %>"></p>
-			    <a href="/game/:name"><button class="btn" data-id="<%= channel %>">Join This Game!</button></a>
+					<%= form_tag("/game/:game", method: :post) do %>
+			    	<h1 id ="index-page">Join Game <%= channel %></h1>
+			    	Enter Your Name:<br>
+			    	<p><input type="text" name="name" class="game-input" id ="game-input" data-id="<%= channel %>" required="true"></p>
+						<p><input type="text" name="channel-id" value="<%= channel %>" hidden></p>
+				    <input type="submit" class="btn" onclick="submitform()" data-id="<%= channel %>" href="/game/:name" value="Join This Game!">
+					<% end %>
 		  	</div>
 			<% end %>
 		</div>
@@ -38,7 +36,7 @@
 			<a href="/deletechannel">Delete Last Lobby</a>
 		</div>
 	</div>
-	<div className="col-md-4">
+	<div class="col-md-4">
 		<h4>Highscores</h4><br>
 		Top 10 Fastest Defeats!<br>
 		<table id="highscore">
@@ -50,5 +48,3 @@
 	</table>
 	</div>
 </div>
-</body>
-</html>
