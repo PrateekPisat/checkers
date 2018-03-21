@@ -1,30 +1,33 @@
-
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<style>
 	#highscore {
-    		font-family: helvetica;
-		}
-		#highscore td, th
-		{
-    		border: 5px solid green;
-    		padding: 12px;
-		}
+	      font-family: helvetica;
+	  }
+	  #highscore td, th
+	  {
+	      border: 5px solid green;
+	      padding: 12px;
+	  }
 
-		#highscore tr:hover {background-color: yellow;}
+	  #highscore tr:hover {background-color: yellow;}
 	</style>
 <h1>Checkers</h1>
 <div class="container-fluid">
+	<div class="row">
+		<div class="col">
+			<a href="https://www.itsyourturn.com/t_helptopic2030.html" target="_blank"> Game Rules</a>
+		</div>
+	</div>
 	<div class="col-md-8">
 		<div class="row">
-			<a href="https://www.itsyourturn.com/t_helptopic2030.html" target="_blank"> Game Rules</a>
 			<%= for channel <- @no_channels do %>
-		  	<div class="col">
+		  	<div class="col-md-4">
 					<%= form_tag("/game/:game", method: :post) do %>
 			    	<h1 id ="index-page">Join Game <%= channel %></h1>
 			    	Enter Your Name:<br>
 			    	<p><input type="text" name="name" class="game-input" id ="game-input" data-id="<%= channel %>" required="true"></p>
 						<p><input type="text" name="channel-id" value="<%= channel %>" hidden></p>
-				    <input type="submit" class="btn" onclick="submitform()" data-id="<%= channel %>" href="/game/:name" value="Join This Game!">
+				    <input type="submit" class="btn" data-id="<%= channel %>" href="/game/:name" value="Join This Game!">
 					<% end %>
 		  	</div>
 			<% end %>

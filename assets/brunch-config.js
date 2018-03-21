@@ -20,7 +20,7 @@ exports.config = {
       // }
     },
     stylesheets: {
-      joinTo: "css/app.scss"
+      joinTo: "css/app.css"
     },
     templates: {
       joinTo: "js/app.js"
@@ -58,16 +58,16 @@ exports.config = {
   },
 
   modules: {
-    noParse: /node_modules\/reactstrap-tether\/dist\/tether.js/,
     autoRequire: {
       "js/app.js": ["js/app"]
-    },
-
+    }
   },
 
   npm: {
-      globals: {
-        $: 'jquery'
-      }
+    enabled: true,
+    globals: {
+      _: 'underscore',
+      $: 'jquery'
     }
+  }
 };

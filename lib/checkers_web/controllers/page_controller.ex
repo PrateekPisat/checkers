@@ -16,8 +16,8 @@ defmodule CheckersWeb.PageController do
       game = GameBackup.load(channelid)
       players = Map.get(game, :players)
       if Enum.member?(players, name) do
-        conn = put_flash(conn, :error, "The Player Name is alaready Taken. Please choose another.")
-        redirect(conn, to: "/")
+        conn = put_flash(conn, :error, "The Player Name is alaready Taken. Join with another name. You currently are a spectator.")
+        render conn, "game.html"
       else
         render conn, "game.html"
       end
