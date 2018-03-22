@@ -34,6 +34,13 @@ class Demo extends React.Component {
         			  .receive("error", resp => { console.log("Unable to join", resp) });
     this.channel.push("add_player", {name: this.playername}).receive("ok", resp => {console.log("Player Added")})
     this.channel.on("shout", this.passToState.bind(this))
+
+    window.addEventListener("beforeunload", (ev) =>
+    {
+      this.channel.push("quit", {name: this.playername})
+                  .receive("ok", resp => {console.log(this.playername + " left the game.")})
+    });
+
   }
 
 
