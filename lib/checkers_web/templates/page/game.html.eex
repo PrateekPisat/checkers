@@ -102,10 +102,10 @@
 
 	#message-box{
 	  display: flex;
-	   width: 800px;
+	   width: 400px;
 	   height: 800px;
 	   align: right;
-	   white-space: nowrap;
+	   white-space: wrap;
 	   overflow: auto;
 	   text-overflow: ellipsis;
 	   background-color: #ffffe6;
@@ -113,26 +113,58 @@
 
 	 #text-input{
 	   display: flex;
-	   width: 600px;
+	   width: 400px;
 	   align: right;
 	   white-space: nowrap;
 
+
 	 }
-
-	
-
 	</style>
 </head>
 <body>
 <h1>Checkers</h1>
-	<div class="col-md-8">
+	<div class="col-md-6">
 			<div id="root">
   				Loading...
 			</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-md-3">
+		<div class="row">
+			<div class="col">
+				<h4>Legend:</h4>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<h3></h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class=col-md-6>
+				Player 1 controls <div class="white-square" >
+				<span class="dot" id="white-checker"></span>
+				</div>
+			</div>
+			<div class=col-md-6>
+				Player 2 controls <div class="white-square" >
+				<span class="dot" id="black-checker"></span>
+				</div>
+			</div>
+			<div class=col-md-6>
+				Red King <div class="white-square" >
+				<span class="dot" id="white-king-checker"></span>
+				</div>
+			</div>
+			<div class=col-md-6>
+				Black King <div class="white-square" >
+				<span class="dot" id="black-king-checker"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3">
 		Chat With People on the Channel
-		<div id="message-box" ScoreController=>
+		<div id="message-box">
 		</div>
 		<div class="row">
   				<input type="text" placeholder="Enter your message!" id="text-input">

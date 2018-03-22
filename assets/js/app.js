@@ -51,7 +51,7 @@ import $ from "jquery"
 
  function setText(resp)
  {
-   var text = $('#message-box').html() + "\n" + resp.msg
+   var text = resp.msg + "\n" + $('#message-box').html()
    $("#message-box").html(text.replace(/\n/g, "<br />"));
  }
 
