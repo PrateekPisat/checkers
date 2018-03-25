@@ -53,6 +53,8 @@ import $ from "jquery"
  {
    var text = resp.msg + "\n" + $('#message-box').html()
    $("#message-box").html(text.replace(/\n/g, "<br />"));
+   $("#text-input").val("");
+
  }
 
  function start_click(ev)

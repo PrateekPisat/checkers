@@ -144,6 +144,11 @@ newGame()
 
 quit()
 {
+  if(this.state.players.includes(this.playername))
+  {
+    let start_time = new Date();
+    sessionStorage.setItem("start_time", start_time)
+  }
   this.channel.push("quit", {name: this.playername})
               .receive("ok", resp => {console.log(this.playername + " left the game.")})
   alert("Leaving the game")
