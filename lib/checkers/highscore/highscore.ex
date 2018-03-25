@@ -22,7 +22,7 @@ defmodule Checkers.Highscore do
   end
 
   def highscore() do
-    query = from s in Score, order_by: s.game_time, limit: 10
+    query = from s in Score, order_by: s.game_time
     Repo.all(query)
   end
 

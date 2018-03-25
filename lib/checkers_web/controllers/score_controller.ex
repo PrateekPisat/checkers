@@ -11,10 +11,9 @@ defmodule CheckersWeb.ScoreController do
     render(conn, "index.json", scores: scores)
   end
 
-  def create(conn, %{"player1" => player1, "player2" => player2, "hour" => start_hour, "minute" => start_minute,
-  "second" => start_second}) do
+  def create(conn, %{"player1" => player1, "player2" => player2, "hours" => hours, "minutes" => minutes, "seconds" => seconds}) do
     time = %DateTime{year: 0, month: 0, day: 0,
-    hour: start_hour, minute: start_minute, second: start_second,
+    hour: hours, minute: minutes, second: seconds,
     zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
     std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
     with {:ok, %Score{} = score} <- Highscore.create_score(%{player1: player1, player2: player2, game_time: time}) do

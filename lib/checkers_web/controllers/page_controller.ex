@@ -11,7 +11,7 @@ defmodule CheckersWeb.PageController do
     render conn, "index.html", no_channels: no_channels, scores: scores
   end
 
-  def game(conn, %{"name" => name, "channel-id" => channelid}) do
+  def game(conn, _) do
       render conn, "game.html"
   end
 

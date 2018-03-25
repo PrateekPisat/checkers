@@ -17,9 +17,7 @@ defmodule Checkers.Game do
     		score: 0,
     		noClick: 0,
     		index1: -1,
-    		index2: -1,
     		char1: "",
-    		char2: "",
     		clickable: false,
         currentPlayer: "1",
 				kings: [
@@ -37,23 +35,35 @@ defmodule Checkers.Game do
 				winner: "",
 				players: [],
 				message: "",
+				startHours: 0,
+				startMinutes: 0,
+				startSeconds: 0,
     	}
     end
 
  def add_player(state, player_name) do
  	players = state.players
 	clickable = state.clickable
+	startHours = state.startHours
+	startMinutes = state.startMinutes
+	startSeconds = state.startSeconds
 	message = player_name <> " joined the game"
 	if(length(players) < 2 && !Enum.member?(players, player_name)) do
 		players = players ++  [player_name]
 		message = message <> " as Player " <> to_string(length(players))
 	end
 	if length(players) == 2 do
+		if startHours== 0 && startMinutes == 0 && startSeconds==0 do
+			{{_, _, _}, {startHours, startMinutes, startSeconds}} = :calendar.local_time()
+		end
 		clickable = true
 		message = message <> ". " <> to_string(Enum.fetch!(state.players, String.to_integer(state.currentPlayer) - 1)) <> "'s turn to play!"
 	end
 	state = Map.put(state, :clickable, clickable)
 	|> Map.put(:players, players)
+	|> Map.put(:startHours, startHours)
+	|> Map.put(:startMinutes, startMinutes)
+	|> Map.put(:startSeconds, startSeconds)
 	|> Map.put(:message, message)
  end
 
@@ -141,9 +151,50 @@ defmodule Checkers.Game do
 						end
 						if !Enum.any?(board, fn(x) -> x == "2" end) || !(no_more_moves("2", board, kings)) do
 							winner = "1"
+							{{_, _, _}, {hours, minutes, seconds}} = :calendar.local_time()
+							time = %DateTime{year: 0, month: 0, day: 0,
+					    hour: hours, minute: minutes, second: seconds,
+					    zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
+					    std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
+							start_time = %DateTime{year: 0, month: 0, day: 0,
+					    hour: state.startHours, minute: state.startMinutes, second: state.startSeconds,
+					    zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
+					    std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
+							total_time = Time.diff(time, start_time)
+					    hour = div(total_time, 3600)
+					    minute = div(rem(total_time, 3600), 60)
+					    second = rem(rem(total_time, 3600), 60)
+					    time = %DateTime{year: 0, month: 0, day: 0,
+					    hour: hour, minute: minute, second: second,
+					    zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
+					    std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
+							state = Map.put(state, :startHours, hour)
+							|> Map.put(:startSeconds, second)
+							|> Map.put(:startMinutes, minute)
+
 						end
 						if !Enum.any?(board, fn(x) -> x == "1" end) || !(no_more_moves("1", board, kings)) do
 							winner = "2"
+							{{_, _, _}, {hours, minutes, seconds}} = :calendar.local_time()
+							time = %DateTime{year: 0, month: 0, day: 0,
+					    hour: hours, minute: minutes, second: seconds,
+					    zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
+					    std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
+							start_time = %DateTime{year: 0, month: 0, day: 0,
+					    hour: state.startHours, minute: state.startMinutes, second: state.startSeconds,
+					    zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
+					    std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
+							total_time = Time.diff(time, start_time)
+							hour = div(total_time, 3600)
+							minute = div(rem(total_time, 3600), 60)
+							second = rem(rem(total_time, 3600), 60)
+							time = %DateTime{year: 0, month: 0, day: 0,
+							hour: hour, minute: minute, second: second,
+							zone_abbr: "AMT", time_zone: "America/Manaus",  utc_offset: -14400,
+							std_offset: 0} |> DateTime.to_naive() |> NaiveDateTime.truncate(:second) |> NaiveDateTime.to_time()
+							state = Map.put(state, :startHours, hour)
+							|> Map.put(:startSeconds, second)
+							|> Map.put(:startMinutes, minute)
 						end
 						message = to_string(Enum.fetch!(state.players, String.to_integer(nextPlayer) - 1)) <> "'s turn to play!"
 						state = Map.put(state, :board, board)

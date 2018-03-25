@@ -24,7 +24,8 @@ class Demo extends React.Component {
   kings: [],
   winner: "",
   players: [],
-  message: ""
+  message: "",
+  game_time: ""
  	};
     this.playername = props.playername
     this.name = props.name
@@ -66,30 +67,14 @@ handleClick(index)
 passToState(gameState)
 {
   console.log(gameState.game)
-  if(!this.state.clickable && gameState.game.clickable)
-  {
-    var start_time = new Date();
-    sessionStorage.setItem("start_time", start_time);
-    sessionStorage.getItem("start_time")
-  }
   if(gameState.game.winner == "1")
   {
-    alert("Player 1 wins!");
-    let current_time = new Date();
-    let start_time = new Date(sessionStorage.getItem("start_time"));
-    console.log(start_time);
-    let startSecond = start_time.getSeconds();
-    let startMinute = start_time.getMinutes();
-    let startHour = start_time.getHours();
-    let endSecond = current_time.getSeconds();
-    let endMinute = current_time.getMinutes();
-    let endHour = current_time.getHours();
     let text = JSON.stringify({
           player1: gameState.game.players[0],
           player2: gameState.game.players[1],
-          second: endSecond - startSecond,
-          minute: endMinute - startMinute,
-          hour: endHour - startHour,
+          hours: gameState.game.startHours,
+          minutes: gameState.game.startMinutes,
+          seconds: gameState.game.startSeconds
     });
     if (gameState.game.players[0] == this.playername)
     {
@@ -100,27 +85,19 @@ passToState(gameState)
         data: text,
       });
     }
+    alert(this.state.players[0] + " Won!")
     this.newGame();
   }
   else if(gameState.game.winner == "2")
   {
-    alert("Player 2 wins!");
-    let current_time = new Date();
-    let start_time = new Date(sessionStorage.getItem("start_time"));
-    let startSecond = start_time.getSeconds();
-    let startMinute = start_time.getMinutes();
-    let startHour = start_time.getHours();
-    let endSecond = current_time.getSeconds();
-    let endMinute = current_time.getMinutes();
-    let endHour = current_time.getHours();
     let text = JSON.stringify({
           player1: gameState.game.players[1],
           player2: gameState.game.players[0],
-          second: endSecond - startSecond,
-          minute: endMinute - startMinute,
-          hour: endHour - startHour,
+          hours: gameState.game.startHours,
+          minutes: gameState.game.startMinutes,
+          seconds: gameState.game.startSeconds
     });
-    if (gameState.game.players[0] == this.playername)
+    if (gameState.game.players[1] == this.playername)
     {
         $.ajax(score_path, {
         method: "POST",
@@ -129,6 +106,7 @@ passToState(gameState)
         data: text,
       });
     }
+    alert(this.state.players[1] + " Won!")
     this.newGame();
   }
   else
@@ -138,6 +116,7 @@ passToState(gameState)
 newGame()
 {
     let start_time = new Date();
+    sessionStorage.removeItem("start_time");
     sessionStorage.setItem("start_time", start_time)
 	   this.channel.push("new", {name: this.playername})
 }
@@ -147,6 +126,7 @@ quit()
   if(this.state.players.includes(this.playername))
   {
     let start_time = new Date();
+    sessionStorage.removeItem("start_time");
     sessionStorage.setItem("start_time", start_time)
   }
   this.channel.push("quit", {name: this.playername})
@@ -166,12 +146,12 @@ quit()
         </div>
       </div>
       <div className="row">
-        <div className="col">
+        <div className="col-md-12">
           <h4>{this.state.message}</h4>
         </div>
       </div>
 			<div className="row">
-				<div className="col">
+				<div className="col-md-12">
 					<div className="board">
 						{this.state.board.map((cell, index) => {
               if ((index >=11) && (index <= 88) && ![10, 20, 30, 40, 50, 60, 70, 80, 19, 29, 39, 49, 59, 69, 79, 89].includes(index) )
